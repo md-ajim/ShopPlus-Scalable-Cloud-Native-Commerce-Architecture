@@ -1,0 +1,58 @@
+# Node modules
+frontend/node_modules/
+
+# Build folders
+frontend/.next/
+frontend/.next/cache/
+frontend/out/
+
+
+# Env files
+.env.local
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+
+# Python
+backend/.env
+backend/.env.production
+backend/staticfiles/
+backend/db.sqlite3
+backend/media/
+backend/settings/migrations/__pycache__/
+backend/nextCart/migrations/__pycache__/
+backend/nextCart/__pycache__/
+*/migrations/*
+!*/migrations/__init__.py
+*.py[cod]
+
+# Logs
+*.log
+npm-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# Others
+frontend/.turbo/
+
+# Docker
+.dockerignore
+
+# AWS
+aws
+awscliv2.zip
+
+# root env
+.env
+env
+
+# venv
+venv
+venv-local

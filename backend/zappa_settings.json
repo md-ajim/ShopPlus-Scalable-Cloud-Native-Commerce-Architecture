@@ -1,0 +1,19 @@
+{
+    "dev": {
+        "aws_region": "us-east-1",
+        "django_settings": "settings.settings",
+        "exclude": [
+            "boto3",
+            "dateutil",
+            "botocore",
+            "s3transfer",
+            "concurrent"
+        ],
+        "project_name": "backend",
+        "runtime": "python3.12",
+        "s3_bucket": "shopplus-zappa-bucket",
+        "slim_handler": true,
+        "memory_size": 512,
+        "timeout_seconds": 300
+    }
+}
