@@ -33,10 +33,7 @@ const footerSections = [
         title: "Electronis Products",
         href: "/category-sidebar?category=ELECTRONICS",
       },
-      // {
-      //   title: "Gift Cards",
-      //   href: "/gift-cards",
-      // },
+
     ],
   },
   {
