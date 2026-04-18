@@ -63,4 +63,4 @@ Ensure you have **Docker** and **Docker Compose** installed.
 * **Experience:** 2+ Years Professional | 5+ Years Coding
 * **Portfolio:** [MD AJIM](https://md-ajim.vercel.app/)
 * **GitHub:** [@md-ajim](https://github.com/md-ajim)
-* **LinkedIn:** [https://www.linkedin.com/in/md-ajim/]
+* **LinkedIn:** [MD AJIM](https://www.linkedin.com/in/md-ajim/)
