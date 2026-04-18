@@ -573,9 +573,9 @@ class Community(models.Model):
     report = models.CharField(max_length=20, choices=REPORT_CHOICES, default='other')
 
 class SortingOption(models.Model):
-    name = models.CharField(max_length=50, unique=True)  # e.g., "Newest", "Oldest"
-    value = models.CharField(max_length=50, unique=True)  # e.g., "newest", "oldest"
-    order_by = models.CharField(max_length=100)  # e.g., "-created_at", "rating"
+    name = models.CharField(max_length=50, unique=True)  
+    value = models.CharField(max_length=50, unique=True)  
+    order_by = models.CharField(max_length=100) 
 
     def __str__(self):
         return self.name
