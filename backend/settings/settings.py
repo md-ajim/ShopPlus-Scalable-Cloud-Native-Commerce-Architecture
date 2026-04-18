@@ -212,8 +212,8 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 # }
 
 
-# Supabase Database Configuration
 
+# Supabase Database Configuration
 
 db_url = os.environ.get('DATABASE_URL')
 
@@ -226,7 +226,6 @@ if db_url:
         )
     }
 else:
-    # যদি URL না পায়, তবে সাময়িকভাবে SQLite ব্যবহার করবে (এরর এড়াতে)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
