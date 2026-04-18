@@ -84,16 +84,12 @@ INSTALLED_APPS = [
 
 
 
-AUTH_USER_MODEL = 'nextCart.User'  # Replace 'nextCart' with the app where the custom User model is defined
+AUTH_USER_MODEL = 'nextCart.User' 
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    # Others auth providers (e.g. Facebook, OpenId, etc)
-    # Google  OAuth2
     'social_core.backends.google.GoogleOAuth2',
-    # drf-social-oauth2
     'drf_social_oauth2.backends.DjangoOAuth2',
-    # Django
     'rest_framework.authentication.TokenAuthentication',
     'oauth2_provider.backends.OAuth2Backend',
 )
