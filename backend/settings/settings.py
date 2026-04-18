@@ -564,10 +564,6 @@ UNFOLD = {
 
 
 
-
-
-
-
 if DEBUG:
     STORAGES = {
         "default": {
@@ -590,7 +586,7 @@ else:
     AWS_S3_FILE_OVERWRITE = False
     AWS_QUERYSTRING_AUTH = False
 
-    # ডাইনামিক ডোমেইন (এটি ব্যবহার করা নিরাপদ)
+
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
     
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
