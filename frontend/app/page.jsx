@@ -1,465 +1,460 @@
 "use client";
-
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Loader2, 
-  ArrowRight, 
-  Flame, 
-  ShoppingBag, 
-  Search, 
-  Send, 
-  Sparkles,
-  Zap
-} from "lucide-react";
 import { toast } from "sonner";
-import { ShoppingCart, Heart, Star, Eye } from "lucide-react";
-// UI Components
-import { Label } from "@/components/ui/label";
-import Navbar from "@/components/layout/navbar";
-import FooterWithSitemap from "@/components/layout/footer";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; 
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
+// ShadCN UI Components
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { api } from "./api/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-axios.defaults.withCredentials = true;
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-// Animation Variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-};
+// Icons
+import {
+  Heart,
+  ShoppingCart,
+  Flame,
+  Eye,
+  Filter,
+  ListFilter,
+  Search,
+  Star,
+  ChevronDown,
+} from "lucide-react";
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+// Custom Components
+import Navbar from "@/components/layout/navbar";
+import FooterWithSitemap from "@/components/layout/footer";
 
-export default function HomePage() {
-  // --- STATE MANAGEMENT (PRESERVED) ---
+
+
+export default function ProductListingPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-  const [specials, setSpecials] = useState([]);
-  const [outdoorProducts, setOutdoorProducts] = useState([]);
-  const [electronicProducts, setElectronicProducts] = useState([]);
-   
-  // Form state
-  const [formData, setFormData] = useState({
-    itemNeeded: "",
-    details: "",
-    quantity: ""
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [filters, setFilters] = useState({
+    search: "",
+    categories: [],
+    priceRange: null,
+    minRating: null,
+    sort: "created_at",
   });
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const { session: data } = useSession();
+  const productsPerPage = 8;
 
-  // --- API FETCHING (PRESERVED) ---
+  // Fetch products with filters
   useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
+    const fetchProducts = async () => {
+      setLoading(true);
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          axios.get("/api/product/"),
-          axios.get("/api/category/"),
-        ]);
+        const params = {
+          page: currentPage,
+          limit: productsPerPage,
+          search: filters.search || searchParams.get("search"),
+          search_category:
+            filters.categories && filters.categories.length > 0
+              ? filters.categories.join(",")
+              : searchParams.get("category"),
 
-        setProducts(productsRes.data.results);
-        
-        // Logic preserved exactly as requested
-        const outdoorProducts = productsRes.data.results.filter(product => product.search_categories === 'SPORTS' && product.discount_percentage == null).slice(0,4);
-        const electronicProducts = productsRes.data.results.filter(product => product.search_categories === 'ELECTRONICS' && product.discount_percentage == null).slice(0,7);
-        const specialsOffers = productsRes.data.results.filter(product => product.discount_start_date !== null);
-        const categories =  categoriesRes.data.results.filter( category => category.name !== 'SPORTS' && category.name !== 'ELECTRONICS')
-        setOutdoorProducts(outdoorProducts);
-        setElectronicProducts(electronicProducts);
-        setSpecials(specialsOffers);
-        setCategories(categories);
+          min_price: filters.priceRange?.min,
+          max_price: filters.priceRange?.max,
+          min_rating: filters.minRating?.min,
+          max_rating: filters.minRating?.max,
+          
+          ordering: filters.sort,
+        };
+
+        const response = await axios.get(
+          "/api/product/",
+          { params }
+        ); 
+        console.log(response, 'response')
+        setProducts(response.data.results);
+        setTotalPages(Math.ceil(response.data.count / productsPerPage));
       } catch (error) {
-        toast.error("Error loading data. Please check your connection.");
-        console.log(error);
+        toast.error("Failed to load products");
+        console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
     };
+    fetchProducts();
+  }, [currentPage, filters, searchParams]);
 
-    fetchData();
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    try {
-     const res =  await axios.post("/api/requestquote/", {
-        item_needed: formData.itemNeeded,
-        details: formData.details,
-        quantity: formData.quantity,
-      });
-      console.log(res.data, 'res');
-      toast.success("Quote request sent successfully!");
-      setFormData({ itemNeeded: "", details: "", quantity: "" });
-    } catch (error) {
-      console.log(error, 'error');
-      toast.error("Failed to send quote request.");
-    } finally {
-      setLoading(false);
-    }
+  // Handle filter changes
+  const handleFilterChange = (name, value) => {
+    setFilters((prev) => ({ ...prev, [name]: value }));
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Toggle category selection
+  const toggleCategory = (category) => {
+    router.push(
+      `/category-sidebar?category=${
+        (category,
+        filters.categories.includes(category)
+          ? filters.categories.filter((c) => c !== category).join("+")
+          : [...filters.categories, category].join("+"))
+      }`
+    );
+
+    setFilters((prev) => ({
+      ...prev,
+      categories: filters.categories.includes(category)
+        ? filters.categories.filter((c) => c !== category)
+        : [...prev.categories, category],
+    }));
   };
 
-  // --- HARDCODED CATEGORIES (PRESERVED) ---
-  const categories_data = [
-     { id: 1, name: "ALL", image : './', slug: "all" },
-     { id: 2, name: "CLOTHES", slug: "clothes" },
-     { id: 3, name: "FOOD", slug: "food" },
-     { id: 4, name: "BEAUTY", slug: "beauty" },
-     { id: 5, name: "SPORTS", slug: "sports" },
-     { id: 6, name: "HOME", slug: "home" },
-     { id: 7, name: "OUTDOOR", slug: "outdoor" },
-     { id: 8, name: "ELECTRONICS", slug: "electronics" },
-     { id: 9, name: "GADGETS", slug: "gadgets" },
-     { id: 10, name: "BOOKS", slug : "books" },
+
+
+  // Price range options
+  const priceRanges = [
+    { label: "Under $50", value: { min: 0, max: 50 } },
+    { label: "$50 - $100", value: { min: 50, max: 100 } },
+    { label: "$100 - $200", value: { min: 100, max: 200 } },
+    { label: "Over $200", value: { min: 200, max: null } },
   ];
 
-  const mainCategories = categories_data.slice(0, 4);
+  // Rating options
+  const ratingOptions = [
+    { label: "4+ Stars - 5 Stars", value: { min: 4, max: 6 }},
+    { label: "3+ Stars - 4 Stars", value: { min: 3 , max : 4}},
+    { label: "2+ Stars - 3 Stars", value:  {min : 2, max : 3}},
+    { label: "0+ Stars - 2 Stars", value: { min :0, max : 2}},
+  ];
+
+  // Sort options
+  const sortOptions = [
+    { label: "Newest", value: "-created_at" },
+    { label: "Price: Low to High", value: "price" },
+    { label: "Price: High to Low", value: "-price" },
+    { label: "Rating", value: "-rating" },
+  ];
+
+
+  
 
   return (
-    // ADDED: bg-white dark:bg-neutral-950 and text-handling
-    <div className="min-h-screen flex flex-col font-sans bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 transition-colors duration-300">
-      <Navbar />
-      
-      <main className="flex-1">
-        
-        {/* --- HERO SECTION (MODERNIZED) --- */}
-        <section className="relative border-b border-neutral-200 dark:border-slate-700/10 overflow-hidden pt-12 pb-20 lg:pt-20">
-          <div className="container px-4 mx-auto relative z-10">
-            <motion.div 
-              initial="hidden"
-              animate="visible"
-              variants={fadeIn}
-              // UPDATED: Light/Dark background classes
-              className="bg-white dark:bg-black text-neutral-900 dark:text-white border border-neutral-100 dark:border-slate-700/10 rounded-[2.5rem] p-8 md:p-16 overflow-hidden relative shadow-2xl"
-            >
-              {/* Abstract Background Shapes */}
-              <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/50 dark:bg-blue-600/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4" />
-              <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-100/50 dark:bg-purple-600/30 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4" />
-              
-              <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                  <Badge variant="secondary" className="px-4 py-1 text-sm bg-neutral-100 dark:bg-white/10 text-neutral-800 dark:text-white hover:bg-neutral-200 dark:hover:bg-white/20 border-0 backdrop-blur-sm">
-                    <Sparkles className="w-3 h-3 mr-2 text-yellow-500 dark:text-yellow-400" /> New Collection 2026
-                  </Badge>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
-                    Future of <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-                      Shopping
-                    </span>
-                  </h1>
-                  <p className="text-lg text-neutral-600 dark:text-gray-300 max-w-lg leading-relaxed">
-                    Discover cutting-edge electronics and lifestyle gear with our curated 2026 collection.
-                  </p>
-                  <div className="flex flex-wrap gap-4 pt-4">
-                    <Button asChild size="lg" className="rounded-full px-8 h-12 bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 font-semibold text-base border-0">
-                      <Link href="/category-sidebar">Explore Store</Link>
-                    </Button>
-                    <Button asChild variant="outline" size="lg" className="rounded-full px-8 h-12 bg-transparent border-neutral-300 dark:border-gray-700 text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-white/10 font-semibold text-base">
-                      <Link href="/category-sidebar/?category=ELECTRONICS">View Gadgets</Link>
-                    </Button>
-                  </div>
-                </div>
+    <Suspense>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+
+        <main className="flex-1 container mx-auto px-4 py-8">
+          {/* Page Header */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <h1 className="text-3xl font-bold">All Products</h1>
+
+            {/* Search and Filter Controls */}
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              <div className="relative flex-1 md:flex-none md:w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search products..."
+                  className="pl-10"
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange("search", e.target.value)}
+                />
+              </div>
+
+              {/* Mobile Filters Button */}
+              <Sheet
+                open={mobileFiltersOpen}
+                onOpenChange={setMobileFiltersOpen}
                 
-                {/* Hero Image / Graphic Area */}
-                <div className="hidden lg:block relative h-[400px]">
-                   <motion.div 
-                     animate={{ y: [0, -20, 0] }}
-                     transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-                     className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-3xl opacity-10 dark:opacity-20 rotate-3"
-                   />
-                   <div className="absolute inset-0 bg-[url('/bannar/bannar.png')] bg-cover bg-center rounded-3xl shadow-2xl border border-neutral-200 dark:border-white/10" />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+              >
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="md:hidden">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filters
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className=" w-75">
+                  <SheetHeader>
+                    <SheetTitle>Filters</SheetTitle>
+                  </SheetHeader>
+                  <MobileFilters
+                    filters={filters}
+                    priceRanges={priceRanges}
+                    ratingOptions={ratingOptions}
+                    toggleCategory={toggleCategory}
+                    handleFilterChange={handleFilterChange}
+                  />
+                </SheetContent>
+              </Sheet>
 
-   
-        {/* --- CATEGORIES SECTION --- */}
-
-        <section className="py-16 container border-b border-neutral-200 dark:border-slate-700/10 px-4 mx-auto">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={staggerContainer}
-            className="space-y-8"
-          >
-            <div className="flex items-end justify-between">
-              <div>
-                <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">Browse Categories</h2>
-                <p className="text-neutral-500 dark:text-gray-400 mt-2">Explore our most popular collections</p>
-              </div>
-              <Button variant="ghost" asChild className="group hover:bg-neutral-100 dark:hover:bg-white/10">
-                <Link href="/category-sidebar" className="text-blue-600 dark:text-primary font-semibold">
-                  View All 
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
+              {/* Desktop Sort Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="hidden md:flex">
+                    <ListFilter className="mr-2 h-4 w-4" />
+                    Sort
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[200px]">
+                  <DropdownMenuRadioGroup
+                    value={filters.sort}
+                    onValueChange={(value) => handleFilterChange("sort", value)}
+                  >
+                    {sortOptions.map((option) => (
+                      <DropdownMenuRadioItem
+                        key={option.value}
+                        value={option.value}
+                      >
+                        {option.label}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
+          </div>
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-              {loading ? (
-                 Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-3xl bg-neutral-200 dark:bg-slate-800" />)
-              ) : (
-                categories.slice(0,2).map((category) => (
-                  // variants={fadeIn} 
-                  <motion.div key={category.id} className="h-64">
-                    <Link href={`/category-sidebar/?category=${category?.name}`} className="block h-full">
-                      <div className="group relative h-full w-full rounded-3xl overflow-hidden cursor-pointer shadow-md hover:shadow-2xl transition-all duration-500">
-           
-                        <div className="absolute inset-0">
-                           <img 
-                             src={category.image} 
-                             alt={category.name}
-                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                           />
-                        </div>
-                        
-             
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
-                        
-                        
-                        <div className="absolute bottom-0 left-0 p-6 w-full transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                          <div className="flex items-center justify-between">
-                            <div>
-                               <p className="text-xs font-bold text-white/80 tracking-widest uppercase mb-1">Collection</p>
-                               <h3 className="text-xl font-bold text-white leading-tight">{category.name}</h3>
-                            </div>
-
-                            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
-                               <ArrowRight className="w-5 h-5" />
-                            </div>
-                          </div>
-                        </div>
+          <div className="grid md:grid-cols-[250px_1fr] gap-8">
+            {/* Desktop Filters Sidebar */}
+            <aside className="hidden md:block space-y-6">
+              <Suspense>
+                <FilterSection title="Categories">
+                  {["CLOTHES", "ELECTRONICS", "HOME", "BEAUTY", "SPORTS"].map(
+                    (category) => (
+                      <div key={category} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`cat-${category}`}
+                          checked={filters.categories.includes(category)}
+                          onCheckedChange={() => toggleCategory(category)}
+                        />
+                        <Label htmlFor={`cat-${category}`}>{category}</Label>
                       </div>
-                    </Link>
+                    )
+                  )}
+                </FilterSection>
+              </Suspense>
 
-                  
-                  </motion.div>
+              <Suspense>
+                <FilterSection title="Price Range">
+
+                  <Select
+                    value={filters.priceRange?.label}
+                    onValueChange={(value) => {
+                      const range = priceRanges.find((r) => r.label === value);
+                      handleFilterChange("priceRange", range?.value || null);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select price range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {priceRanges.map((range) => (
+                        <SelectItem key={range.label} value={range.label}>
+                          {range.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                </FilterSection>
+              </Suspense>
+
+              <FilterSection title="Rating">
+
+              
+                <Select
+                  value={filters.minRating?.label}
+                  onValueChange={(value) =>{
+
+                   const rating = ratingOptions.find((r)=> r.label === value);
+
+                    handleFilterChange("minRating",rating?.value  || null)
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select rating rating" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ratingOptions.map((option) => (
+                      <SelectItem
+                        key={option.label}
+                        value={option.label}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterSection>
+            </aside>
+
+            {/* Product Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {loading ? (
+                Array.from({ length: 8 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
                 ))
+              ) : products.length > 0 ? (
+                products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <h3 className="text-lg font-medium">No products found</h3>
+                  <p className="text-muted-foreground mt-2">
+                    Try adjusting your filters or search term
+                  </p>
+                </div>
               )}
             </div>
-          </motion.div>
-        </section>
-
-        
-        {/* --- HOT DEALS (CAROUSEL) --- */}
-        <section className="py-16 border-b border-neutral-200 dark:border-slate-700/10 overflow-hidden">
-           <div className="container px-4 mx-auto">
-             <div className="flex items-center gap-3 mb-8">
-               <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-500/20">
-                 <Flame className="w-6 h-6 text-orange-600 dark:text-orange-500 animate-pulse" />
-               </div>
-               <h2 className="text-3xl font-bold text-neutral-900 dark:text-white">Flash Deals</h2>
-             </div>
-
-             <Carousel className="w-full">
-              <CarouselContent className="-ml-4">
-                {loading ? (
-                  Array.from({ length: 4 }).map((_, i) => (
-                    <CarouselItem key={i} className="pl-4 md:basis-1/2 lg:basis-1/4">
-                      <Skeleton className="h-[350px] bg-neutral-200 dark:bg-slate-800 rounded-xl" />
-                    </CarouselItem>
-                  ))
-                ) : (
-                  specials.map((item) => (
-                    <CarouselItem key={item.id} className="pl-4 md:basis-1/2 lg:basis-1/4">
-                      <Link href={`/product/${item?.id}`}>
-                        {/* UPDATED: Card background for light/dark */}
-                        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-neutral-200 dark:border-slate-700/10 p-4 h-full hover:shadow-lg dark:hover:bg-slate-700 transition-all duration-300 group">
-                          <div className="relative aspect-square bg-white rounded-xl overflow-hidden mb-4 p-4">
-                            <img src={item.image} alt={item.title} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
-                            {item.discount_percentage && (
-                              <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600 text-white border-0">
-                                -{item.discount_percentage}%
-                              </Badge>
-                            )}
-                          </div>
-                          <h3 className="font-semibold text-neutral-900 dark:text-white line-clamp-1 mb-1">{item.title}</h3>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xl font-bold text-neutral-900 dark:text-white">${item.price}</span>
-                            <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-white/10 text-neutral-900 dark:text-white flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-primary transition-colors">
-                              <ArrowRight className="w-4 h-4" />
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </CarouselItem>
-                  ))
-                )}
-              </CarouselContent>
-              <div className="flex justify-end gap-2 mt-6">
-                 {/* UPDATED: Buttons for light/dark */}
-                 <CarouselPrevious className="static translate-y-0 bg-white dark:bg-transparent text-neutral-900 dark:text-white border-neutral-200 dark:border-white/20 hover:bg-neutral-100 dark:hover:bg-white/10" />
-                 <CarouselNext className="static translate-y-0 bg-white dark:bg-transparent text-neutral-900 dark:text-white border-neutral-200 dark:border-white/20 hover:bg-neutral-100 dark:hover:bg-white/10" />
-              </div>
-            </Carousel>
-           </div>
-        </section>
-
-        {/* --- DUAL SECTIONS (OUTDOOR & ELECTRONICS) --- */}
-        <div className="container px-4 mx-auto py-20 space-y-20">
-          
-          {/* Outdoor Section */}
-          <SectionHeader title="Sports & Outdoor" link="/category-sidebar/?category=SPORTS" />
-          <div 
-            // variants={staggerContainer}
-            // initial="hidden"
-            // whileInView="visible"
-            // viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {loading ? <LoadingGrid count={4} /> : outdoorProducts.map(p => <ModernProductCard key={p.id} product={p} />)}
           </div>
 
-          {/* Electronics Section */}
-          <SectionHeader title="Electronics & Gadgets" link="/category-sidebar/?category=ELECTRONICS" />
-          <div 
-            // variants={staggerContainer}
-            // initial="hidden"
-            // whileInView="visible"
-            // viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-             {loading ? <LoadingGrid count={4} /> : electronicProducts.map(p => <ModernProductCard key={p.id} product={p} />)}
-          </div>
-
-        </div>
-
-        {/* --- REQUEST QUOTE (User Friendly Light/Dark) --- */}
-        <section className="py-20 relative border-t border-b border-neutral-200 dark:border-slate-700/10 overflow-hidden bg-neutral-50 dark:bg-neutral-950">
-          {/* Background decoration */}
-          <div className="absolute inset-0 bg-grid-slate-200/50 dark:bg-none opacity-20" />
-          <div className="absolute top-0 left-0 w-full h-full pointer-events-none" />
-
-          <div className="container px-4 mx-auto relative z-10">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-500/20 border border-indigo-200 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium">
-                  <Zap className="w-4 h-4" /> B2B Services
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 dark:text-white">Need a custom order?</h2>
-                <p className="text-lg leading-relaxed max-w-md text-neutral-600 dark:text-neutral-300">
-                  We specialize in bulk sourcing. Tell us what you need, and we'll scan our global network to find the best price for you within 24 hours.
-                </p>
-                <ul className="space-y-3 text-neutral-700 dark:text-neutral-300">
-                   <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400"/> Competitive wholesale pricing</li>
-                   <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400"/> Verified Global Suppliers</li>
-                   <li className="flex items-center gap-3"><span className="w-1.5 h-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400"/> Dedicated support agent</li>
-                </ul>
-              </div>
-
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-              >
-                {/* UPDATED: Glassmorphism that works in light & dark */}
-                <Card className="shadow-2xl border-neutral-200 dark:border-white/10 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur-md">
-                  <CardContent className="p-8">
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2 col-span-2">
-                          <Label className="text-neutral-900 dark:text-white">Product Name</Label>
-                          <Input 
-                            name="itemNeeded"
-                            value={formData.itemNeeded}
-                            onChange={handleInputChange}
-                            placeholder="E.g. Wireless Noise Cancelling Headphones" 
-                            className="bg-white dark:bg-white/5 border-neutral-300 dark:border-white/10 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-white/30 focus-visible:ring-indigo-500 h-12"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-neutral-900 dark:text-white">Quantity</Label>
-                          <Input 
-                            name="quantity"
-                            type="number"
-                            value={formData.quantity}
-                            onChange={handleInputChange}
-                            placeholder="100" 
-                            className="bg-white dark:bg-white/5 border-neutral-300 dark:border-white/10 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-white/30 focus-visible:ring-indigo-500 h-12"
-                          />
-                        </div>
-                          <div className="space-y-2">
-                          <Label className="text-neutral-900 dark:text-white">Timeline</Label>
-                          <Input 
-                            placeholder="ASAP" 
-                            className="bg-white dark:bg-white/5 border-neutral-300 dark:border-white/10 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-white/30 focus-visible:ring-indigo-500 h-12"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                          <Label className="text-neutral-900 dark:text-white">Additional Details</Label>
-                          <Textarea 
-                            name="details"
-                            value={formData.details}
-                            onChange={handleInputChange}
-                            placeholder="Specific colors, materials, or shipping requirements..."
-                            className="bg-white dark:bg-white/5 border-neutral-300 dark:border-white/10 text-neutral-900 dark:text-white placeholder:text-neutral-400 dark:placeholder:text-white/30 focus-visible:ring-indigo-500 min-h-[100px]"
-                          />
-                       </div>
-                      <Button type="submit" disabled={loading} className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-400 text-white font-semibold text-base transition-all">
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2"/> : <Send className="w-4 h-4 mr-2"/>}
-                        {loading ? "Sending Request..." : "Request Quote"}
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-              </motion.div>
+          {/* Pagination */}
+          {products.length > 0 && (
+            <div className="mt-8 flex justify-center">
+              <PaginationUI
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
             </div>
-          </div>
-        </section>
+          )}
+        </main>
 
-      </main>
-      <FooterWithSitemap />
-    </div>
+        <FooterWithSitemap />
+      </div>
+    </Suspense>
   );
 }
 
-// --- SUB COMPONENTS FOR CLEANLINESS ---
-
-function SectionHeader({ title, link }) {
+// Mobile Filters Component
+function MobileFilters({
+  filters,
+  priceRanges,
+  ratingOptions,
+  toggleCategory,
+  handleFilterChange,
+}) {
   return (
-    <div className="flex items-end justify-between mb-8 border-b border-neutral-200 dark:border-slate-800 pb-4">
-      <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{title}</h2>
-      <Link href={link} className="flex items-center text-sm font-semibold text-blue-600 dark:text-primary hover:underline">
-        View Collection <ArrowRight className="ml-1 w-4 h-4" />
-      </Link>
+    <div className="space-y-6 ml-4 overflow-auto py-4 mt-4">
+      <FilterSection title="Categories">
+        {["CLOTHES", "Electronics", "Home", "Beauty", "SPORTS"].map(
+          (category) => (
+            <div key={category} className="flex items-center gap-2">
+              <Checkbox
+                id={`mob-cat-${category}`}
+                checked={filters.categories.includes(category)}
+                onCheckedChange={() => toggleCategory(category)}
+              />
+              <Label htmlFor={`mob-cat-${category}`}>{category}</Label>
+            </div>
+          )
+        )}
+      </FilterSection>
+
+      <FilterSection title="Price Range">
+        <div className="space-y-2">
+          {priceRanges.map((range) => (
+            <div key={range.label} className="flex items-center gap-2">
+              <Checkbox
+                id={`mob-price-${range.label}`}
+                checked={
+                  filters.priceRange?.min === range.value.min &&
+                  filters.priceRange?.max === range.value.max
+                }
+
+
+                onCheckedChange={() =>
+                  handleFilterChange(
+                    "priceRange",
+                    filters.priceRange?.min === range.value.min
+                      ? null
+                      : range.value
+                  )
+                }
+
+
+              />
+              <Label htmlFor={`mob-price-${range.label}`}>{range.label}</Label>
+            </div>
+          ))}
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Minimum Rating">
+        <div className="space-y-2">
+          {ratingOptions.map((option) => (
+            <div key={option.label} className="flex items-center gap-2">
+              <Checkbox
+                id={`mob-rating-${option.label}`}
+                checked={
+                  filters.minRating?.min === option.value.min &&
+                  filters.minRating?.min === option.value.min
+
+
+                }
+
+
+                onCheckedChange={() =>
+                  handleFilterChange(
+                    "minRating",
+                    filters.minRating?.min === option.value.min ? null : option.value
+                  )
+                }
+
+
+                
+              />
+              <Label htmlFor={`mob-rating-${option.value}`}>
+                {option.label}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </FilterSection>
     </div>
   );
 }
+
+// Product Card Component
+function ProductCard({ product }) {
+  const [quantity, setQuantity] = useState(1);
+
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartUser, setCartUser] = useState(null);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
 
 
 
@@ -476,19 +471,7 @@ const uploadImage = async (imageUrl, fileName = "image.jpg") => {
     return file;
 };
 
-
-function ModernProductCard({ product }) {
-  // Mock function for add to cart to prevent navigation
-
-  console.log(product, "product")
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
-  const [cartUser, setCartUser] = useState(null);
-  const { data: session, status } = useSession();
-  const router = useRouter();
-
-
- useEffect(() => {
+  useEffect(() => {
     const factCart = async () => {
       const response = axios.get(`/api/cart/`, {
         headers: {
@@ -507,14 +490,14 @@ function ModernProductCard({ product }) {
 
 
 
-  const handleAddToCart = async (product) => {
+  const handleAddToCart = async () => {
     if (!session?.user?.id) {
       router.push("/form/login");
       return;
     }
     setIsAddingToCart(true);
     try {
-
+      const image = await uploadImage(product?.image);
    
       const formData = new FormData();
       formData.append("cart", Number(cartUser?.id)); // fallback ID
@@ -522,23 +505,22 @@ function ModernProductCard({ product }) {
       formData.append("color", product?.product?.default_color || "black");
       formData.append("size", product?.product?.default_size || "M");
       formData.append("image", product?.image);
-      formData.append("quantity", 1);
-      console.log(formData, 'form-data')
+      formData.append("quantity", quantity);
+   
 
       if (session?.user?.id) {
         if (!cartUser) {
-          const response = axios.post(`/api/cart/`, {
+          const response = axios.post(`https://airfm9n2a7.execute-api.us-east-1.amazonaws.com/dev/api/cart/`, {
             user: session?.user?.id,
           });
           formData.append(
             "cart",
             Number(cartUser?.id) || (await response).data?.id
           ); // fallback ID
-          console.log(response, 'cart response')
         }
         
         const res = await axios.post(
-          `/api/cartItems/`,
+          `https://airfm9n2a7.execute-api.us-east-1.amazonaws.com/dev/api/api/cartItems/`,
           formData,
           {
             headers: {
@@ -546,7 +528,6 @@ function ModernProductCard({ product }) {
             },
           }
         );
-        console.log(res, "res");
         if (res.data) {
           toast.success("Added to cart!");
         }
@@ -564,153 +545,245 @@ function ModernProductCard({ product }) {
 
 
 
+  const handleWishlist = async () => {
+    // const image = await uploadImage(product?.image);
+    const formData = new FormData();
+    formData.append("cart", Number(cartUser?.id)); // fallback ID
+    formData.append("product",product?.id);
+    formData.append("name", product?.name);
+    formData.append("color", product?.default_color || "black");
+    formData.append("price", product?.price);
+    formData.append("user", Number(session?.user?.id));
+    formData.append("size", product?.product?.default_size || "M");
+    formData.append("image", product?.image);
+    formData.append("quantity", quantity);
 
-    const handleWishlist = async () => {
-      // const image = await uploadImage(product?.image);
-      const formData = new FormData();
-      formData.append("cart", Number(cartUser?.id)); // fallback ID
-      formData.append("product",product?.id);
-      formData.append("name", product?.name);
-      formData.append("color", product?.default_color || "black");
-      formData.append("price", product?.price);
-      formData.append("user", Number(session?.user?.id));
-      formData.append("size", product?.product?.default_size || "M");
-      formData.append("image", product?.image);
-      formData.append("quantity", 1);
-  
-      console.log(formData, "wishlist_formData");
-      setIsWishlistLoading(true);
-      try {
-        // Implement wishlist API call
-        const response = axios.post(
-          `/api/wishlist/`,
-          formData
-        );
-        console.log(response, "wishlist_response");
-        const data = (await response).data;
-        if (data) {
-          toast.success("Added to wishlist!");
-        }
-      } catch (error) {
-        toast.error("Failed to update wishlist");
-      } finally {
-        setIsWishlistLoading(false);
+
+    setIsWishlistLoading(true);
+    try {
+      // Implement wishlist API call
+      const response = axios.post(
+        `/api/wishlist/`,
+        formData
+      );
+      console.log(response, "wishlist_response");
+      const data = (await response).data;
+      if (data) {
+        toast.success("Added to wishlist!");
       }
-    };
-  
+    } catch (error) {
+      toast.error("Failed to update wishlist");
+    } finally {
+      setIsWishlistLoading(false);
+    }
+  };
 
   return (
-    <motion.div variants={fadeIn} className="h-full">
-      <Link href={`#`} className="group h-full block relative">
-        <Card className="h-full border border-neutral-200 dark:border-slate-700/30 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-neutral-900 rounded-2xl flex flex-col">
-          
-          {/* --- IMAGE SECTION --- */}
-          <div className="relative aspect-[4/3] bg-gray-50 dark:bg-neutral-800 overflow-hidden p-4">
-            {/* Discount Badge */}
-            {product.discount_percentage && (
-              <div className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-sm uppercase tracking-wide">
-                -{product.discount_percentage}%
-              </div>
-            )}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="group relative border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+    >
+      {/* Product Image */}
+      <Link href={`/product/${product.id}`} className="block">
+        <div className="aspect-square bg-gray-100 relative overflow-hidden">
+          <img
+            src={product.image}
+            alt={product?.name}
+            className="w-full h-full object-cover transition-transform group-hover:scale-105"
+          />
+          {product?.category.name && (
+            <Badge className="absolute top-2 right-2">
+              {product.category.name}
+            </Badge>
+          )}
+        </div>
+      </Link>
+      {product?.discount_percentage ? (
+        <Badge
+          variant="destructive"
+          className="absolute top-3 left-3 z-10 animate-pulse"
+        >
+          <Flame className="h-3 w-3 mr-1" />
+          {product?.discount_percentage} OFF
+        </Badge>
+      ) : null}
 
-            {/* Wishlist Button (Top Right) - Always visible */}
-            <button 
-              onClick={()=> handleWishlist(product)}
-              className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/80 dark:bg-black/50 text-neutral-600 dark:text-neutral-300 hover:text-red-500 hover:bg-white transition-colors shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100 translate-y-[-10px] group-hover:translate-y-0 transition-all duration-300"
-              title="Add to Wishlist"
-            >
-              <Heart className="w-4 h-4" />
-            </button>
+      {/* Product Info */}
+      <div className="p-4">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-medium line-clamp-2">
+            <Link href={`/product/${product.id}/`} className="hover:underline">
+              {product?.name}
+            </Link>
+          </h3>
+          <div className="text-lg font-semibold">${product?.price}</div>
+        </div>
 
-            <img 
-              src={product.image} 
-              alt={product.title} 
-              className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform duration-500 ease-out" 
-            />
-
-            {/* Quick Action Overlay (Only View Button) */}
-            <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-gradient-to-t from-white/90 via-white/50 to-transparent dark:from-black/90 dark:via-black/50">
-               {/* Note: changed to div/span instead of Button to avoid nesting issues, styled as button */}
-             <Link href={`/product/${product.id}`}>
-               <span className="flex items-center justify-center w-full h-10 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-medium shadow-lg cursor-pointer hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors">
-                  <Eye className="w-4 h-4 mr-2" /> View Product
-               </span>
-             </Link>
-            </div>
+        {/* Rating  */}
+        <div className="flex   justify-between gap-1 mb-3">
+          <div className="flex items-center">
+            <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
+            <span className="ml-1 text-sm font-medium">
+              {product?.average_ratings}
+            </span>
           </div>
 
-          {/* --- CONTENT SECTION --- */}
-          <CardContent className="p-4 flex-1 flex flex-col justify-between">
-                 {/* Star Rating (Static/Mock for now) */}
-            <div>
-         
-              {/* <div className="flex items-center gap-1 mb-2">
-                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                <Star className="w-3 h-3 text-neutral-300 dark:text-neutral-600" />
-                <span className="text-xs text-neutral-500 dark:text-neutral-400 ml-1">(4.0)</span>
-              </div> */}
+          <div className="flex items-center gap-2 ">
+            {product?.discount_percentage && (
+              <span className="text-sm text-muted-foreground line-through">
+                ${product?.discount_percentage}
+              </span>
+            )}
+            {product.discount && (
+              <Badge variant="secondary" className="text-xs">
+                Save ${product?.discount}
+              </Badge>
+            )}
+          </div>
+        </div>
 
+        {product.sold > 0 && (
+          <div className="flex justify-between text-xs text-muted-foreground mb-1">
+            <span>Sold: {product.sold}</span>
+            <span>Available: {200 - product.sold}</span>
+          </div>
+        )}
 
-              <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 leading-tight line-clamp-2 mb-2 group-hover:text-blue-600 dark:group-hover:text-indigo-400 transition-colors">
-                {product.title}
-              </h3>
-            </div>
-
-            {/* Price & Add to Cart Row */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-neutral-100 dark:border-slate-800">
-              <div className="flex flex-col">
-                <span className="text-lg font-bold text-neutral-900 dark:text-white">
-                  ${product.price}
-                </span>
-                {/* Optional: Show original price if discounted */}
-                {product.discount_percentage && (
-                   <span className="text-xs text-neutral-400 line-through">
-                     ${(product.price * (1 + product.discount_percentage / 100)).toFixed(2)}
-                   </span>
-                )}
-              </div>
-              
-              {/* Direct Add to Cart Button */}
-              <Button 
-                onClick={()=>handleAddToCart(product)}
-                size="icon" 
-                variant="secondary"
-                className="rounded-full h-10 w-10 bg-neutral-100 dark:bg-neutral-800 hover:bg-blue-600 hover:text-white dark:hover:bg-indigo-600 transition-colors"
-                title="Add to Cart"
-              >
-                <ShoppingCart className="w-4 h-4" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </Link>
+        {/* Actions */}
+        <div className="grid gap-2">
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) =>
+                setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+              }
+              className="w-16 h-9"
+            />
+            <Button
+              onClick={handleAddToCart}
+              disabled={isAddingToCart}
+              className="flex-1"
+            >
+              {isAddingToCart ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Add to Cart
+                </>
+              )}
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              onClick={() => handleWishlist (product)}
+              disabled={isWishlistLoading}
+            >
+              <Heart className="mr-2 h-4 w-4" />
+              Wishlist
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href={`/product/${product.id}`}>
+                <Eye className="mr-2 h-4 w-4" />
+                View
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
     </motion.div>
   );
 }
 
-
-
-
-
-
-function LoadingGrid({ count }) {
-  return Array.from({ length: count }).map((_, i) => (
-    <div key={i} className="space-y-3">
-      <Skeleton className="h-[250px] w-full rounded-2xl bg-neutral-200 dark:bg-slate-800" />
-      <Skeleton className="h-4 w-2/3 bg-neutral-200 dark:bg-slate-800" />
-      <Skeleton className="h-4 w-1/3 bg-neutral-200 dark:bg-slate-800" />
+// Skeleton Loader for Product Card
+function ProductCardSkeleton() {
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      <Skeleton className="aspect-square w-full" />
+      <div className="p-4 space-y-3">
+        <Skeleton className="h-5 w-3/4" />
+        <Skeleton className="h-4 w-1/2" />
+        <div className="flex gap-1">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-4 w-4 rounded-full" />
+          ))}
+        </div>
+        <Skeleton className="h-9 w-full" />
+      </div>
     </div>
-  ));
+  );
 }
 
+// Reusable Filter Section Component
+function FilterSection({ title, children }) {
+  return (
+    <div className="space-y-3">
+      <h3 className="font-medium">{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+// Custom Pagination Component
+function PaginationUI({ currentPage, totalPages, onPageChange }) {
 
 
 
 
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </Button>
 
+      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+        const page = i + 1;
+        return (
+          <Button
+            key={page}
+            variant={currentPage === page ? "default" : "outline"}
+            size="sm"
+            onClick={() => onPageChange(page)}
+          >
+            {page}
+          </Button>
+        );
+      })}
 
+      {totalPages > 5 && (
+        <>
+          <span className="px-2">...</span>
+          <Button
+            variant={currentPage === totalPages ? "default" : "outline"}
+            size="sm"
+            onClick={() => onPageChange(totalPages)}
+          >
+            {totalPages}
+          </Button>
+        </>
+      )}
 
-
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </Button>
+    </div>
+  );
+}
