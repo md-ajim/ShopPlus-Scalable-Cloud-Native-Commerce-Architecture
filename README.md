@@ -40,7 +40,7 @@ Ensure you have **Docker** and **Docker Compose** installed.
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git](https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git)
+    git clone https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git
     cd ShopPlus
     ```
 
