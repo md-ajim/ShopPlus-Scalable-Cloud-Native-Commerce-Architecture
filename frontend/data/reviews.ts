@@ -80,5 +80,5 @@ export const reviews: Review[] = [
     ],
   },
   
-  // More reviews...
+
 ];
