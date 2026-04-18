@@ -1,4 +1,4 @@
-// components/product/ProductTabs.tsx
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Product } from "@/types/product";
 import { Review, ReviewStats } from "@/types/review";
