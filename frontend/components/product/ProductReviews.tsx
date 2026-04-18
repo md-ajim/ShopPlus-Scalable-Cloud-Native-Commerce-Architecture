@@ -34,63 +34,6 @@ export default function ProductReviews({ reviews,  stats , product , review_data
 
   return (
     <div className="space-y-8">
- 
-      {/* <div className="rounded-lg border p-6">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <div className="text-5xl font-bold">{stats.averageRating.toFixed(1)}</div>
-            <div className="flex">
-              {[...Array(5)].map((_, i) => {
-                const ratingValue = i + 1;
-                return (
-                  <span key={i}>
-                    {ratingValue <= Math.floor(stats.averageRating) ? (
-                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    ) : ratingValue - 0.5 <= stats.averageRating ? (
-                      <StarHalf className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    ) : (
-                      <Star className="h-5 w-5 text-muted-foreground" />
-                    )}
-                  </span>
-                );
-              })}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {stats.totalReviews} reviews
-            </div>
-          </div>
-
-   
-          <div className="space-y-3">
-            {[5, 4, 3, 2, 1].map((rating) => (
-              <div key={rating} className="flex items-center gap-3">
-                <div className="flex w-8 items-center gap-1">
-                  <span className="text-sm">{rating}</span>
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                </div>
-                <Progress
-                  value={(stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution] / stats.totalReviews) * 100}
-                  className="h-2 w-full"
-                />
-                <span className="w-8 text-sm text-muted-foreground">
-                  {stats.ratingDistribution[rating as keyof typeof stats.ratingDistribution]}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-col items-center justify-center space-y-2">
-            <div className="text-3xl font-bold">{stats.recommendedPercentage}%</div>
-            <div className="text-center text-sm">
-              of customers recommend this product
-            </div>
-            <Button variant="outline" className="mt-4">
-              Write a Review
-            </Button>
-          </div>
-        </div>
-      </div> */}
 
       <Separator />
 
