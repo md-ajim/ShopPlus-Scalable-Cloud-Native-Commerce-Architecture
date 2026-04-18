@@ -561,7 +561,7 @@ UNFOLD = {
 
 # ============================================================================
 
-# এটি স্ট্রিং "False" কে আসল Boolean False এ রূপান্তর করবে
+
 
 
 
@@ -569,7 +569,6 @@ UNFOLD = {
 
 
 if DEBUG:
-    # আপনার বর্তমান DEBUG কোড ঠিক আছে...
     STORAGES = {
         "default": {
             "BACKEND": "django.core.files.storage.FileSystemStorage",
