@@ -25,9 +25,9 @@
 // };
 
 
-// api/client.ts
+
 import axios from "axios";
-import { getSession } from "next-auth/react"; // ক্লায়েন্ট সাইড সেশন হ্যান্ডলার
+import { getSession } from "next-auth/react"; 
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "/api/";
 
@@ -36,17 +36,13 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: false, // আপনার ব্যাকএন্ড কনফিগারেশনের উপর নির্ভর করে (CORS)
+  withCredentials: false, 
 });
 
-// Request Interceptor: প্রতিটি রিকোয়েস্ট পাঠানোর আগে এটি কল হবে
 api.interceptors.request.use(
   async (config) => {
-    // 1. সেশন থেকে টোকেন বের করা
-    const session = await getSession();
 
-    // 2. যদি টোকেন থাকে এবং হেডারে আগে থেকে সেট করা না থাকে, তবে সেট করা
-    // আপনার টোকেন স্ট্রাকচার অনুযায়ী session.accessToken বা session.user.accessToken হতে পারে
+    const session = await getSession();
     const token = session?.accessToken; 
 
     if (token) {
@@ -60,7 +56,7 @@ api.interceptors.request.use(
   }
 );
 
-// এটি ম্যানুয়ালি টোকেন সেট করার জন্য রাখা যেতে পারে (অপশনাল)
+// এটি ম্যানুয়ালি টোকেন সেট করার জন্য রাখা যেতে পারে 
 // export const setAuthToken = (token?: string) => {
 //   if (token) {
 //     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
