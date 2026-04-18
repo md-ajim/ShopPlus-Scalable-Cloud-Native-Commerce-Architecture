@@ -108,15 +108,7 @@ export function NavUser({
                 <IconUserCircle onClick={()=> router.push('/dashboard/account/settings')} className="mr-2 size-4" />
                 My Profile
               </DropdownMenuItem>
-              {/* <DropdownMenuItem>
-                <IconShoppingCart className="mr-2 size-4" />
-                My Cart
-                {user && user.cartItems && user.cartItems ? (
-                  <Badge variant="outline" className="ml-auto">
-                    {user?.cartItems}
-                  </Badge>
-                ) : null}
-              </DropdownMenuItem> */}
+          
               <DropdownMenuItem onClick={()=> router.push('/dashboard/wishlists')}>
                 <IconHeart className="mr-2 size-4" />
                 Wishlist
