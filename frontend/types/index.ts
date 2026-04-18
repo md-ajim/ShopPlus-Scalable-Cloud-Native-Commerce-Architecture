@@ -13,7 +13,7 @@ export type Notification = {
 export interface Product {
   id: number;
   name: string;
-  price: string; // Django DecimalField usually returns string
+  price: string; 
   image: string;
   category?: string;
 }
@@ -25,7 +25,6 @@ export interface CartItem {
   quantity: number;
   size?: string;
   color?: string;
-  // Included mainly for UI optimism
   isLoading?: boolean; 
 }
 
