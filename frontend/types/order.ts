@@ -5,7 +5,7 @@ export interface Order {
        items : OrderItem[],
        created_at : string,
        updated_at : string,
-       status: 'processing' | 'pending' | 'shipped' | 'delivered' | 'cancelled';  // যদি কেবল 'processin
+       status: 'processing' | 'pending' | 'shipped' | 'delivered' | 'cancelled';  
        total_price : string,
        tax : string,
        shipping_cost: string;
