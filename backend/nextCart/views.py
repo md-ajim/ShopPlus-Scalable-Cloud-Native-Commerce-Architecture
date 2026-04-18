@@ -187,7 +187,7 @@ class CartItemView(ModelViewSet):
     permission_classes = [AllowAny]
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    pagination_class = None   # Disables pagination for this view
+    pagination_class = None
     def get_queryset(self):
         return CartItem.objects.all()
     
