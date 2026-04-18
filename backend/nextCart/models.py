@@ -477,8 +477,7 @@ class Review(models.Model):
 
 class Reviews(models.Model):
     rating = models.PositiveSmallIntegerField(
-        choices=[(i, str(i)) for i in range(1, 6)],  # 1–5 star rating
-        default=0
+        choices=[(i, str(i)) for i in range(1, 6)],
     )
     title = models.CharField(max_length=255, blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='review' , default=1)
