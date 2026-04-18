@@ -486,7 +486,6 @@ class Reviews(models.Model):
     user = models.ForeignKey(User , on_delete=models.CASCADE , related_name='reviews', default=1 )
     email = models.EmailField()
     text = models.TextField()
-    # images
     created_at = models.DateTimeField(auto_now_add=True)  # auto timestamp
     updated_at = models.DateTimeField(auto_now=True)
 
