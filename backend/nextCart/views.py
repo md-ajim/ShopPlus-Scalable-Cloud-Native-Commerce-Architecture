@@ -225,7 +225,7 @@ class WishlistView(ModelViewSet):
 
     queryset = Wishlist.objects.all()
     serializer_class = WishlistSerializer
-    pagination_class = None   # Disables pagination for this view
+    pagination_class = None  
     def get_queryset(self):
         return Wishlist.objects.all()
     
