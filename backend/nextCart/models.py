@@ -502,13 +502,6 @@ class Reviews(models.Model):
         return f"Review for {self.product.name} by {self.user.username}"
 
 
-
-# class ReviewImage(models.Model):
-#     review = models.ForeignKey(Reviews , on_delete=models.CASCADE, related_name='images')
-#     image = models.ImageField( upload_to='review-images/' , null=True , blank=True)
-#     def ___str___(self):
-#         return f"{self.review.name} - {self.image}"
-
 class ReviewImage(models.Model):
     review = models.ForeignKey(
         Reviews,
