@@ -146,7 +146,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Add this right after SecurityMiddleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",  
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
