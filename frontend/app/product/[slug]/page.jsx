@@ -239,9 +239,6 @@ const useCart = () => {
 
 const handleWishlist = async () => {
   setWishlistLoading(true);
-
-  // ... (Your existing FormData construction logic remains the same) ...
-  // const imageFile = await urlToFile(variants[selectedImageIndex].image);
   const formData = new FormData();
   formData.append("user", String(session.user.id));
   formData.append("name", product?.name);
@@ -256,8 +253,7 @@ const handleWishlist = async () => {
     // CORRECTED: Pass formData directly, not inside { }
     const response = await axios.post(`/api/wishlist/`, formData, {
         headers: {
-            // Optional: Axios usually sets this automatically for FormData, 
-            // but explicit is safe.
+
             "Content-Type": "multipart/form-data", 
         }
     });
