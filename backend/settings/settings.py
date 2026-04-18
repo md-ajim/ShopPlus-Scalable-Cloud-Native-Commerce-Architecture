@@ -376,7 +376,7 @@ UNFOLD = {
         "light": lambda request: static("logos/logo-light.PNG"),
         "dark": lambda request: static("logos/logo-dark.svg"),
     },
-    "SITE_SYMBOL": "person",  # Material icon
+    "SITE_SYMBOL": "person",  
     "SITE_FAVICONS": [
         {
             "rel": "icon",
@@ -389,7 +389,7 @@ UNFOLD = {
      "SITE_DROPDOWN": [
         {
             "icon": "diamond",
-            "title": _("ShopLentic"),
+            "title": _("Dashboard"),
             "link": "http://13.62.196.86",
         },
         # ...
