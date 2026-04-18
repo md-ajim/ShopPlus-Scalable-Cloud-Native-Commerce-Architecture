@@ -437,8 +437,7 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     color = models.CharField(max_length=50 , null=True , blank=True)
     size = models.CharField(max_length=50, null=True, blank=True)
-    image = models.URLField(default='https://via.placeholder.com/150')  # Default image if no variant image is uploaded
-    quantity = models.PositiveIntegerField()
+    image = models.URLField(default='https://via.placeholder.com/150')  
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
