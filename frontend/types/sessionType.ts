@@ -7,8 +7,8 @@ export interface SessionData {
         id : number,
         init : number
     },
-  expires: string;       // ISO date string (e.g. "2025-08-26T11:51:18.411Z")
-  accessToken: string;   // JWT access token
-  refreshToken: string;  // JWT refresh token
+  expires: string;       
+  accessToken: string;   
+  refreshToken: string;  
 
 }
