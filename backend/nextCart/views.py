@@ -94,7 +94,7 @@ class ProductView(ModelViewSet):
         'price',    
         'created_at',    
         'rating__rating',  
-        'order_count',  # ✅ Change 'trending' to 'order_count'
+        'order_count',
     ]
     
     ordering = ['-created_at']
