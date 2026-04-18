@@ -342,7 +342,7 @@ class ProductQuality(models.Model):
 
 class ProductVariant(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
-    quality = models.ManyToManyField(ProductQuality, blank=True, related_name='variants')  # Allow multiple qualities
+    quality = models.ManyToManyField(ProductQuality, blank=True, related_name='variants')  
     stock = models.PositiveIntegerField(default=0)  # Track stock per variant
     price_modifier = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     def __str__(self):
