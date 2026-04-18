@@ -601,8 +601,3 @@ class Preferences(models.Model):
         
     
 
-# class Deal(models.Model):
-#   type = models.CharField( max_length=50 , null=True , blank=True)
-#   discount = models.IntegerField( max_length=2)
-#   label = models.CharField(max_length=100 , null= True blank= True)
-
