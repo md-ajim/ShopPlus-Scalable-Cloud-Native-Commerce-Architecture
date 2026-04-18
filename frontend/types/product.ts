@@ -21,7 +21,7 @@ export interface Product {
   updated_at: string;
   features: Feature[];
   specifications: Specification[];
-  details: Detail[]; // ✅ now included
+  details: Detail[]; 
   variants: Variant[];
 }
 
