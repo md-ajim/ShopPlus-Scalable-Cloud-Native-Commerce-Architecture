@@ -61,6 +61,6 @@ Ensure you have **Docker** and **Docker Compose** installed.
 **MD AJIM**
 * **Role:** Full Stack Developer
 * **Experience:** 2+ Years Professional | 5+ Years Coding
-* **Portfolio:** [https://md-ajim.vercel.app/]
+* **Portfolio:** [MD AJIM](https://md-ajim.vercel.app/)
 * **GitHub:** [@md-ajim](https://github.com/md-ajim)
 * **LinkedIn:** [https://www.linkedin.com/in/md-ajim/]
