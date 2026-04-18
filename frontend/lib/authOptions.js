@@ -119,7 +119,7 @@ export const authOptions = {
       return session;
     },
   },
-  useSecureCookies: false, // Required for HTTP
+  useSecureCookies: false, 
   pages: {
     signIn: "/form/login",
   },
