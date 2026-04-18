@@ -21,6 +21,7 @@ import os
 import pymysql
 pymysql.install_as_MySQLdb()
 import dj_database_url
+db_url = os.environ.get('DATABASE_URL')
 from dotenv import load_dotenv
 load_dotenv() # Loads variables from .env into os.enviro
 
@@ -214,8 +215,6 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 
 # Supabase Database Configuration
-
-db_url = os.environ.get('DATABASE_URL')
 
 if db_url:
     DATABASES = {
