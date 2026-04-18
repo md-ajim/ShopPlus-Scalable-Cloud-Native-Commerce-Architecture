@@ -542,7 +542,6 @@ class Coupon(models.Model):
 
 
 
-
 class ReviewCategory(models.Model):
     CATEGORY_CHOICES = [
         ('most_recent', 'Most Recent'),
