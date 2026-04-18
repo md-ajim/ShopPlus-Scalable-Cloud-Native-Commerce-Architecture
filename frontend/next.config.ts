@@ -12,12 +12,12 @@ const nextConfig: NextConfig = {
       },
       // AWS S3 (Production)
       {
-        protocol: 'https',  // Change to https
-        hostname: 'shopplus-media.s3.eu-north-1.amazonaws.com', // Added region based on your screenshot
-        port: '', // Remove the IP address completely
+        protocol: 'https',  
+        hostname: 'shopplus-media.s3.eu-north-1.amazonaws.com',
+        port: '', 
         pathname: '/media/**', 
       },
-      // Fallback for standard S3 URL (Optional, keep if unsure)
+   
       {
         protocol: 'https',
         hostname: 'shopplus-media.s3.amazonaws.com',
