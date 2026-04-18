@@ -127,14 +127,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            {/* <DropdownMenuGroup>
-
-              <DropdownMenuItem onClick={()=> router.push('/dashboard/account/settings')}>
-                <IconSettings className="mr-2 size-4" />
-                Account Settings
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator /> */}
+        
             <DropdownMenuItem onClick={() => signOut()} className="text-destructive focus:text-destructive">
               <IconLogout className="mr-2 size-4" />
               Sign Out
