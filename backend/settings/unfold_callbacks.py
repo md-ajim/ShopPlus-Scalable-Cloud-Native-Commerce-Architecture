@@ -8,4 +8,3 @@ def environment_callback(request):
 def environment_title_prefix_callback(request):
     return "[Dev]"
 
-
