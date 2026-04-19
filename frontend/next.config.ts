@@ -13,14 +13,14 @@ const nextConfig: NextConfig = {
       // AWS S3 (Production)
       {
         protocol: 'https',  
-        hostname: 'shopplus-media.s3.eu-north-1.amazonaws.com',
+        hostname: 'd2jlzos2a8il9t.cloudfront.net',
         port: '', 
         pathname: '/media/**', 
       },
    
       {
         protocol: 'https',
-        hostname: 'shopplus-media.s3.amazonaws.com',
+        hostname: 'd2jlzos2a8il9t.cloudfront.net',
         port: '',
         pathname: '/media/**',
       },
