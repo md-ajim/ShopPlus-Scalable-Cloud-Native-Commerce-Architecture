@@ -19,7 +19,7 @@ services:
   frontend:
     build: ./frontend
     container_name: shopplus-frontend
-    networks: # <-- এই অংশটি আপনার ফাইলে মিসিং ছিল
+    networks:
       - shopplus-network
     env_file:
       - ./frontend/.env
