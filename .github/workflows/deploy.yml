@@ -49,6 +49,9 @@ jobs:
           # This replaces old containers with new ones instantly
           docker compose up -d --remove-orphans
 
+          echo "Waiting for database to be ready..."
+          sleep 10  # Gives Postgres time to boot up
+
           echo "Run migrations"
           docker compose exec -T backend python manage.py migrate --noinput
 
