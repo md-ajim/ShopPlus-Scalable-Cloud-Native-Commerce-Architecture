@@ -203,12 +203,12 @@ DATABASES = {
         "PASSWORD": os.environ.get("DB_PASSWORD"),
         "HOST": os.environ.get("DB_HOST"),
         "PORT": os.environ.get("DB_PORT"),
-        "OPTIONS": {
-            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-            "charset" : "utf8mb4",
-        },
+        # "OPTIONS": {
+        #     "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+        #     "charset" : "utf8mb4",
+        # },
         # For connection management in production (Optional)
-        "CONN_MAX_AGE": 600,
+        # "CONN_MAX_AGE": 600,
     }
 }
 
