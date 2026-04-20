@@ -1,37 +1,37 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      // Local Server (Localhost)
+      // Local
       {
         protocol: 'http',
-        hostname: '127.0.0.1',
+        hostname: 'localhost',
         port: '8000',
         pathname: '/media/**',
       },
-      // AWS S3 (Production)
-      {
-        protocol: 'https',  
-        hostname: 'd2jlzos2a8il9t.cloudfront.net',
-        port: '', 
-        pathname: '/media/**', 
-      },
-   
+
+      // CloudFront
       {
         protocol: 'https',
         hostname: 'd2jlzos2a8il9t.cloudfront.net',
-        port: '',
-        pathname: '/media/**',
+        pathname: '/**',
+      },
+
+      // Optional: S3 direct
+      {
+        protocol: 'https',
+        hostname: '*.s3.amazonaws.com',
+        pathname: '/**',
       },
     ],
   },
 
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 };
 
