@@ -1,3 +1,71 @@
+# name: Deploy to Ubuntu Linux EC2
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# concurrency:
+#   group: production-deploy
+#   cancel-in-progress: true
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v4
+
+#       - name: Setup SSH
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+#           chmod 600 ~/.ssh/id_rsa
+#           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+#       - name: Deploy to EC2
+#         run: |
+#           ssh \
+#           -o ServerAliveInterval=60 \
+#           -o ServerAliveCountMax=120 \
+#           ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+
+#           set -e
+#           cd ~/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
+
+#           echo "Pull latest code"
+#           git fetch origin
+#           git reset --hard origin/main
+
+#           # REMOVED: docker compose down (Don't kill the site yet!)
+#           # REMOVED: docker system prune (Don't delete cache yet, we need it for speed!)
+
+#           echo "Build images (Site is STILL ONLINE)"
+#           # Removed --no-cache to speed up deployment significantly
+#           docker compose build
+
+#           echo "Refresh containers (Minimal Downtime)"
+#           # This replaces old containers with new ones instantly
+#           docker compose up -d --remove-orphans
+
+#           echo "Waiting for database to be ready..."
+#           sleep 10  # Gives Postgres time to boot up
+
+#           echo "Run migrations"
+#           docker compose exec -T backend python manage.py migrate --noinput
+
+#           echo "Collect static files"
+#           docker compose exec -T backend python manage.py collectstatic --noinput
+
+#           echo "Cleanup old images (Safe to do now)"
+#           docker image prune -f
+
+#           echo "Deployment finished"
+#           EOF
+
+
+
 name: Deploy to Ubuntu Linux EC2
 
 on:
@@ -20,9 +88,9 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          printf "%s" "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" 2>/dev/null >> ~/.ssh/known_hosts
 
       - name: Deploy to EC2
         run: |
@@ -32,25 +100,23 @@ jobs:
           ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
 
           set -e
+
           cd ~/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
 
           echo "Pull latest code"
           git fetch origin
           git reset --hard origin/main
 
-          # REMOVED: docker compose down (Don't kill the site yet!)
-          # REMOVED: docker system prune (Don't delete cache yet, we need it for speed!)
-
-          echo "Build images (Site is STILL ONLINE)"
-          # Removed --no-cache to speed up deployment significantly
+          echo "Build images (zero downtime approach)"
           docker compose build
 
-          echo "Refresh containers (Minimal Downtime)"
-          # This replaces old containers with new ones instantly
+          echo "Restart containers"
           docker compose up -d --remove-orphans
 
-          echo "Waiting for database to be ready..."
-          sleep 10  # Gives Postgres time to boot up
+          echo "Waiting for backend..."
+          until docker compose exec -T backend echo "ready" >/dev/null 2>&1; do
+            sleep 3
+          done
 
           echo "Run migrations"
           docker compose exec -T backend python manage.py migrate --noinput
@@ -58,9 +124,8 @@ jobs:
           echo "Collect static files"
           docker compose exec -T backend python manage.py collectstatic --noinput
 
-          echo "Cleanup old images (Safe to do now)"
+          echo "Cleanup images"
           docker image prune -f
 
-          echo "Deployment finished"
+          echo "Deployment finished successfully"
           EOF
-
