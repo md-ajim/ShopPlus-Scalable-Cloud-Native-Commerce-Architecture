@@ -331,7 +331,6 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = 'Lax'
-
 AWS_QUERYSTRING_AUTH = False
 
          
@@ -559,8 +558,6 @@ UNFOLD = {
 #     }
 
 # ============================================================================
-
-
 
 
 
