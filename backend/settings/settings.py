@@ -37,7 +37,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 
 
@@ -333,8 +333,8 @@ CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = 'Lax'
 AWS_QUERYSTRING_AUTH = False
 
+DEBUG = os.environ.get('DEBUG')
          
-
 # This is correct and covers all standard headers
 CORS_ALLOW_HEADERS = [
     "accept",
