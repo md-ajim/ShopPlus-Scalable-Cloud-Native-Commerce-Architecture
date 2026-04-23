@@ -333,7 +333,7 @@ CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SAMESITE = 'Lax'
 AWS_QUERYSTRING_AUTH = False
 
-DEBUG = os.environ.get('DEBUG')
+
          
 # This is correct and covers all standard headers
 CORS_ALLOW_HEADERS = [
