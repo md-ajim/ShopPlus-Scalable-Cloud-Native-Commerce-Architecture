@@ -195,7 +195,11 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
 # RDS Database Configuration
 
-DATABASES = {
+if DEBUG:
+    print("Using SQLite Database for development")
+
+else:
+    DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ.get("DB_NAME"),
@@ -210,9 +214,7 @@ DATABASES = {
         # For connection management in production (Optional)
         # "CONN_MAX_AGE": 600,
     }
-}
-
-
+    }
 
 # Supabase Database Configuration
 
