@@ -18,7 +18,6 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 > Add your exported diagram image below (PNG/SVG from draw.io)
 
 ![Architecture Diagram](./assets/architecture/architecture.png)
-![Architecture Diagram](assets/architecture/architecture.png)
 
 ---
 
