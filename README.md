@@ -1,6 +1,6 @@
 # 🛒 ShopPlus – Scalable Cloud-Native E-Commerce Platform
 
-ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** built with modern full-stack and DevOps best practices. It demonstrates how to design, containerize, and deploy a **secure, high-performance, enterprise-grade system** on cloud infrastructure.
+ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** built with modern full-stack and DevOps best practices. It demonstrates how to design, containerise, and deploy a **secure, high-performance, enterprise-grade system** on cloud infrastructure.
 
 ---
 
@@ -18,6 +18,7 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 > Add your exported diagram image below (PNG/SVG from draw.io)
 
 ![Architecture Diagram](./assets/architecture/architecture.png)
+![Architecture Diagram](assets/architecture/architecture.png)
 
 ---
 
