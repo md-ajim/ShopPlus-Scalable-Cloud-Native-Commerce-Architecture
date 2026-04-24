@@ -50,7 +50,10 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 
 ### 💳 Payment Integration
 
-* Stripe-based secure payment processing
+* Integrated Stripe for secure payment processing
+* Supports checkout flow with order confirmation
+* Uses Stripe test mode for safe transaction simulation
+* Backend validates payment and updates order status securely
 
 ### ⚡ Performance Optimisation
 
@@ -140,7 +143,7 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git
+git clone [https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git](https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git)
 cd ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
 ```
 
@@ -223,8 +226,7 @@ compose.yml      # Docker services
 
 ## 👨‍💻 Author
 
-**MD AJIM**
-Full-Stack Developer
+**MD AJIM** Full-Stack Developer
 
 * 💼 Experience: 2+ Years Professional | 5+ Years Coding
 * 🌐 Portfolio: [https://md-ajim.vercel.app/](https://md-ajim.vercel.app/)
