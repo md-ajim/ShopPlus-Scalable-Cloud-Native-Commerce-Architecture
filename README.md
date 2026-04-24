@@ -141,7 +141,7 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone [https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git](https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git)
+git clone https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git
 cd ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
 ```
 
