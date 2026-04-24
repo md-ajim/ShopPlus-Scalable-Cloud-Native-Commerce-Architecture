@@ -1,66 +1,249 @@
-# 🛒 ShopPlus – Enterprise Full-Stack E-Commerce Platform
+# 🛒 ShopPlus – Scalable Cloud-Native E-Commerce Platform
 
-ShopPlus is a production-ready, highly scalable enterprise e-commerce solution. This project demonstrates a robust architecture integrating a high-performance **Next.js** frontend with a secure **Django REST Framework** backend, fully containerized and deployed on **AWS** cloud infrastructure.
+ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** built with modern full-stack and DevOps best practices. It demonstrates how to design, containerize, and deploy a **secure, high-performance, enterprise-grade system** on cloud infrastructure.
 
-## 🌟 Key Technical Highlights
+---
 
-* **Advanced Authentication Architecture:** Engineered a secure, seamless login system integrating `social-django` and `NextAuth.js`. Supported **Google OAuth 2.0** and **JWT-based session handling** to ensure a modern and secure user experience.
-* **Security & Identity Management:** Developed a custom **OTP (One-Time Password)** system for email verification. Utilized **Django Cache** for optimized temporary data storage and automated templated emails for user onboarding.
-* **Cloud Database Engineering:** Configured and managed **AWS RDS (MySQL)** for production environments. Designed complex relational schemas, optimized SQL queries, and implemented live monitoring to maintain 100% data integrity.
-* **Infrastructure & DevOps:** Containerized the entire application environment using **Docker** and **Docker Compose**. Deployed on **AWS EC2** with **Nginx** configured as a reverse proxy for secure routing, SSL termination, and traffic management.
-* **CI/CD & Automation:** Implemented **CI/CD pipelines** to automate testing and deployment workflows, ensuring rapid delivery and high reliability of new features.
-* **Modern UI/UX Implementation:** Crafted a responsive, high-fidelity interface using **Shadcn/ui**, **Framer Motion**, and **Tailwind CSS**, focusing on performance and accessibility.
-* **Payment Integration:** Integrated **Stripe** for secure, enterprise-grade payment processing.
+## 🌐 Live Overview
+
+* 🚀 **Architecture:** Cloud-native, containerised, scalable
+* 🔐 **Authentication:** JWT + Google OAuth 2.0
+* ☁️ **Deployment:** AWS EC2 (Dockerised)
+* ⚡ **Performance:** CDN + caching + optimised queries
+
+---
+
+## 🏗️ Architecture Diagram
+
+> Add your exported diagram image below (PNG/SVG from draw.io)
+
+![Architecture Diagram](./assets/architecture/architecture.png)
+
+---
+
+## 🧠 Architecture Overview
+
+* **Frontend Layer:** Next.js served via CDN (CloudFront) for fast global delivery
+* **Reverse Proxy:** Nginx for SSL termination, routing, and security headers
+* **Backend Layer:** Django REST API with JWT + OAuth authentication
+* **Cache Layer:** Redis for OTP, sessions, and performance
+* **Database:** AWS RDS (MySQL) for managed, reliable storage
+* **Storage:** S3 for media/static assets
+* **DevOps:** Dockerised services with CI/CD (GitHub Actions) deployed to EC2
+
+---
+
+## 🌟 Key Features
+
+### 🔐 Authentication & Security
+
+* JWT-based authentication
+* Google OAuth 2.0 login
+* OTP email verification system
+* Secure session handling
+
+### 🛍️ E-Commerce Core
+
+* Product & category management
+* Order management system
+* User & role management
+
+### 💳 Payment Integration
+
+* Integrated Stripe for secure payment processing
+* Supports checkout flow with order confirmation
+* Uses Stripe test mode for safe transaction simulation
+* Backend validates payment and updates order status securely
+
+### ⚡ Performance Optimisation
+
+* Redis caching (OTP & sessions)
+* Optimised DB queries
+* CDN-based asset delivery
+
+### 🎨 Modern UI/UX
+
+* Responsive design
+* Smooth animations (Framer Motion)
+* Accessible components (Shadcn UI)
+
+---
 
 ## 🛠️ Tech Stack
 
-**Frontend:**
+### Frontend
+
 * Next.js (App Router)
-* TypeScript & React.js
-* Next-Auth
-* Shadcn/ui & Tailwind CSS
+* TypeScript
+* Tailwind CSS
+* Shadcn UI
 * Framer Motion
 
-**Backend:**
-* Python & Django
+### Backend
+
+* Python, Django
 * Django REST Framework (DRF)
-* Simple JWT & social-django
-* Redis (Caching & OTP)
+* Simple JWT
+* social-auth (Google OAuth)
 
-**Cloud & DevOps:**
-* AWS (EC2, RDS, S3)
+### Database & Cache
+
+* MySQL (AWS RDS)
+* Redis
+
+### Cloud & DevOps
+
+* AWS EC2 (Ubuntu)
+* AWS S3 (media)
+* AWS CloudFront (CDN)
 * Docker & Docker Compose
-* Nginx (Reverse Proxy)
-* CI/CD Pipelines
-* Ubuntu Linux
+* Nginx (reverse proxy)
+* GitHub Actions (CI/CD via SSH)
 
-## ⚙️ Installation & Setup
+---
 
-Ensure you have **Docker** and **Docker Compose** installed.
+## ⚙️ CI/CD Pipeline (Zero / Minimal Downtime)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git
-    cd ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
-    ```
+**Strategy:** Build images on server → replace containers with minimal downtime → run migrations → collect static → cleanup.
 
-2.  **Environment Setup:**
-    Configure `.env` files in both `/backend` and `/frontend` directories based on the provided `.env.example` templates.
+### 🔄 Workflow Steps
 
-3.  **Run with Docker:**
-    ```bash
-    docker-compose up --build
-    ```
+1. Push to `main` branch
+2. GitHub Actions workflow triggers
+3. Secure SSH connection to EC2
+4. Pull latest code (`git fetch` + `reset --hard`)
+5. Build Docker images (`docker compose build`)
+6. Refresh containers (`docker compose up -d --remove-orphans`)
+7. Run migrations (`manage.py migrate`)
+8. Collect static files (`collectstatic`)
+9. Cleanup unused images (`docker image prune -f`)
 
-4.  **Access points:**
-    * Frontend: `http://localhost:3000`
-    * API Documentation: `http://localhost:8000/api/`
+> Add CI/CD screenshot below
+
+![CI/CD Pipeline](./assets/screenshots/cicd.png)
+
+---
+
+## 🐳 Deployment Architecture
+
+* Services run inside Docker containers
+* Nginx handles SSL, routing, and security
+* Backend, DB, cache are isolated for scalability
+* Minimal downtime deployments via container refresh
+
+---
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+
+* Docker
+* Docker Compose
+
+### 1️⃣ Clone Repository
+
+```bash
+git clone [https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git](https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git)
+cd ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
+```
+
+### 2️⃣ Environment Setup
+
+Create `.env` files in:
+
+* `/backend`
+* `/frontend`
+
+Use `.env.example` as reference.
+
+### 3️⃣ Run Project
+
+```bash
+docker-compose up --build
+```
+
+### 4️⃣ Access Application
+
+* Frontend: [http://localhost:3000](http://localhost:3000)
+* API: [http://localhost:8000/api/](http://localhost:8000/api/)
+
+---
+
+## 📸 Deployment & Infrastructure Proof
+
+> Add real screenshots to prove production deployment
+
+### ☁️ AWS EC2 Instance
+
+![EC2](./assets/screenshots/ec2.png)
+
+### 🔐 Security Group (Ports 80/443)
+
+![Security Group](./assets/screenshots/security-group.png)
+
+### 🗄️ AWS RDS Database
+
+![RDS](./assets/screenshots/rds.png)
+
+### 🪣 S3 Storage
+
+![S3](./assets/screenshots/s3.png)
+
+### 🐳 Docker Containers
+
+![Docker](./assets/screenshots/docker.png)
+
+### 🌐 Live Application
+
+![Live](./assets/screenshots/live.png)
+
+### 🔗 API Response (Postman / Browser)
+
+![API](./assets/screenshots/api.png)
+
+---
+
+## 📂 Project Structure (Simplified)
+
+```bash
+frontend/        # Next.js app
+backend/         # Django API
+nginx/           # Nginx config
+compose.yml      # Docker services
+```
+
+---
+
+## 📈 Project Highlights
+
+* Designed **scalable cloud-native architecture**
+* Implemented **secure authentication system**
+* Built **containerised production environment**
+* Deployed with **CI/CD automation**
+* Achieved **minimal downtime deployment**
+
+---
 
 ## 👨‍💻 Author
 
-**MD AJIM**
-* **Role:** Full Stack Developer
-* **Experience:** 2+ Years Professional | 5+ Years Coding
-* **Portfolio:** [MD AJIM](https://md-ajim.vercel.app/)
-* **GitHub:** [@md-ajim](https://github.com/md-ajim)
-* **LinkedIn:** [MD AJIM](https://www.linkedin.com/in/md-ajim/)
+**MD AJIM** Full-Stack Developer
+
+* 💼 Experience: 2+ Years Professional | 5+ Years Coding
+* 🌐 Portfolio: [https://md-ajim.vercel.app/](https://md-ajim.vercel.app/)
+* 💻 GitHub: [https://github.com/md-ajim](https://github.com/md-ajim)
+* 🔗 LinkedIn: [https://www.linkedin.com/in/md-ajim/](https://www.linkedin.com/in/md-ajim/)
+
+---
+
+## 📌 Final Note
+
+This project demonstrates:
+
+* Real-world system design
+* DevOps & cloud deployment skills
+* Production-level architecture thinking
+
+---
+
+⭐ If you find this project helpful, consider giving it a star!
+
