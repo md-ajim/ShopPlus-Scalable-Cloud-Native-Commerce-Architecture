@@ -1,5 +1,55 @@
 # 🛒 ShopPlus – Enterprise Full-Stack E-Commerce Platform
 
+graph TD
+    %% Users
+    User([🌐 End User])
+
+    %% Edge / Proxy
+    Cloudflare[🛡️ DNS / Cloudflare]
+    Nginx[🟢 Nginx Reverse Proxy]
+
+    %% Frontend
+    subgraph Frontend Environment
+        NextJS[⚛️ Next.js App Router]
+    end
+
+    %% Backend
+    subgraph Backend Environment
+        DRF[🐍 Django REST Framework]
+        Celery[⚙️ Background Tasks]
+    end
+
+    %% Infrastructure & DevOps
+    subgraph AWS Cloud Infrastructure
+        EC2[💻 EC2 Instance]
+        S3[🪣 AWS S3 - Static/Media]
+        RDS[(🗄️ AWS RDS - MySQL)]
+    end
+
+    %% Third Party
+    Auth[🔐 Google OAuth / OTP]
+    Stripe[💳 Stripe Payment Gateway]
+    Redis[(⚡ Redis Cache)]
+
+    %% Flow
+    User -->|HTTPS| Cloudflare
+    Cloudflare --> EC2
+    EC2 --> Nginx
+    Nginx -->|Route /| NextJS
+    Nginx -->|Route /api/| DRF
+
+    NextJS --> Auth
+    NextJS --> Stripe
+    NextJS --> DRF
+    
+    DRF --> RDS
+    DRF --> Redis
+    DRF --> S3
+    DRF --> Celery
+    Celery --> Redis
+
+
+
 ShopPlus is a production-ready, highly scalable enterprise e-commerce solution. This project demonstrates a robust architecture integrating a high-performance **Next.js** frontend with a secure **Django REST Framework** backend, fully containerized and deployed on **AWS** cloud infrastructure.
 
 ## 🌟 Key Technical Highlights
