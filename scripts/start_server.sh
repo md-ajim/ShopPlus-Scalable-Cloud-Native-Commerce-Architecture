@@ -1,17 +1,17 @@
 #!/bin/bash
 cd /home/ubuntu/shopplus
 
-# ১. পুরোনো কন্টেইনার বন্ধ করা
+#1. Closing old containers
 docker-compose down
 
-# ২. নতুন ইমেজ বিল্ড করা (Frontend এবং Backend উভয়ের জন্য)
+#2. Building new images (for both frontend and backend)
 docker-compose build --pull
 
-# ৩. ব্যাকগ্রাউন্ডে সব সার্ভিস (Nginx, Django, Next.js) চালু করা
+# 3. Starting all services (Nginx, Django, Next.js) in the background
 docker-compose up -d
 
-# ৪. ডাটাবেস মাইগ্রেশন এবং স্ট্যাটিক ফাইল হ্যান্ডলিং (Backend কন্টেইনারের ভেতর)
+# 4. Database migration and static file handling (inside the backend container)
 docker-compose exec -T backend python manage.py migrate --noinput
 
-# ৫. ডকারের অব্যবহৃত ইমেজ ডিলিট করা (সার্ভারের জায়গা বাঁচানোর জন্য)
+# 5. Deleting unused Docker images (to save server space)
 docker image prune -f
