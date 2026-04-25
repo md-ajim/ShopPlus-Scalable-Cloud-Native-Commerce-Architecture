@@ -89,6 +89,8 @@ export default function HomePage() {
         
         const outdoorProducts = productsRes.data.results.filter(product => product.search_categories === 'SPORTS' && product.discount_percentage == null).slice(0,4);
         const electronicProducts = productsRes.data.results.filter(product => product.search_categories === 'ELECTRONICS' && product.discount_percentage == null).slice(0,7);
+        console.log(outdoorProducts, 'outdoor');
+        console.log(electronicProducts, 'electronic');
         const specialsOffers = productsRes.data.results.filter(product => product.discount_start_date !== null);
         const categories = categoriesRes.data.results.filter(category => category.name !== 'SPORTS' && category.name !== 'ELECTRONICS')
         
@@ -128,10 +130,18 @@ export default function HomePage() {
     }
   };
 
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+
+  console.log(categories, 'categories');
+  console.log(outdoorProducts, 'outdoor');
+  console.log(electronicProducts, 'electronic');
+  console.log(specials, 'specials');
+  console.log(products, 'products');
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-white dark:bg-[#0a0a0a] text-neutral-900 dark:text-neutral-50 selection:bg-indigo-500/30">
