@@ -141,7 +141,7 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone [https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git](https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git)
+git clone https://github.com/md-ajim/ShopPlus-Scalable-Cloud-Native-Commerce-Architecture.git
 cd ShopPlus-Scalable-Cloud-Native-Commerce-Architecture
 ```
 
@@ -227,7 +227,7 @@ compose.yml      # Docker services
 **MD AJIM** Full-Stack Developer
 
 * 💼 Experience: 2+ Years Professional | 5+ Years Coding
-* 🌐 Portfolio: [https://md-ajim.vercel.app/](https://md-ajim.vercel.app/)
+* 🌐 Portfolio: [mdajim.work](mdajim.work)
 * 💻 GitHub: [https://github.com/md-ajim](https://github.com/md-ajim)
 * 🔗 LinkedIn: [https://www.linkedin.com/in/md-ajim/](https://www.linkedin.com/in/md-ajim/)
 
