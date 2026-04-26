@@ -56,3 +56,4 @@ env
 # venv
 venv
 venv-local
+.aider.chat.history.md
