@@ -116,7 +116,6 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 8. Collect static files (`collectstatic`)
 9. Cleanup unused images (`docker image prune -f`)
 
-> Add CI/CD screenshot below
 
 ![CI/CD Pipeline](./assets/screenshots/cicd.png)
 
