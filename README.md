@@ -168,8 +168,6 @@ docker-compose up --build
 
 ## 📸 Deployment & Infrastructure Proof
 
-> Add real screenshots to prove production deployment
-
 ### ☁️ AWS EC2 Instance
 
 ![EC2](./assets/screenshots/ec2.png)
