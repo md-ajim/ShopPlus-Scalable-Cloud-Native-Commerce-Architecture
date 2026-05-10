@@ -56,11 +56,3 @@ api.interceptors.request.use(
   }
 );
 
-// এটি ম্যানুয়ালি টোকেন সেট করার জন্য রাখা যেতে পারে 
-// export const setAuthToken = (token?: string) => {
-//   if (token) {
-//     api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-//   } else {
-//     delete api.defaults.headers.common["Authorization"];
-//   }
-// };
