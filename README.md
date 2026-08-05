@@ -87,7 +87,6 @@ ShopPlus is a **production-ready, scalable, cloud-native e-commerce platform** b
 ### Database & Cache
 
 * MySQL (AWS RDS)
-* Redis
 
 ### Cloud & DevOps
 
